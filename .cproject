@@ -43,60 +43,60 @@
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.LITTLE_ENDIAN.2031715668" name="Little endian code [See 'General' page to edit] (--little_endian, -me)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.LITTLE_ENDIAN" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.INCLUDE_PATH.1680333660" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.INCLUDE_PATH" valueType="includePath">
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/freertos_kernel/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/source"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/config_files"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/application_code/ti_code"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/freertos_kernel/portable/CCS/ARM_CM3"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/posix/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/vendors/ti/boards/cc3220_launchpad/ports/posix"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/standard/freertos_plus_posix/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/standard/common/include/private"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/posix/include/FreeRTOS_POSIX"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/network_manager"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/standard/common/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/platform/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/platform/freertos/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/platform/include/platform"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/secure_sockets/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/logging/include"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/dev_mode_key_provisioning/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/pkcs11/corePKCS11/source/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/standard/crypto/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/standard/utils/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/wifi/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/aws/defender/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/standard/mqtt/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/coreMQTT/source/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/coreMQTT/source/interface"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/backoff_algorithm/source/include"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/common/pkcs11_helpers"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/abstractions/transport/secure_sockets"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/standard/serializer/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/aws/shadow/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/c_sdk/standard/https/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/coreHTTP/source/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/coreHTTP/source/interface"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/http_parser"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/common/http_demo_helpers"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/aws/greengrass/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/aws/ota/src"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/aws/ota/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/mbedtls/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/freertos_plus/standard/freertos_plus_cli/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/coreJSON/source/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/device_shadow_for_aws/source/include"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/common/mqtt_demo_helpers"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/device_defender_for_aws/source/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/jobs_for_aws/source/include"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/device_defender_for_aws"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/pkcs11"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/mbedtls_config"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/mbedtls/include/mbedtls"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/mbedtls_utils"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/tinycbor/src"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/../../amazon-freertos/libraries/3rdparty/jsmn"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/source"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/freertos_kernel/portable/CCS/ARM_CM3"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/posix/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/vendors/ti/boards/cc3220_launchpad/ports/posix"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/standard/freertos_plus_posix/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/standard/common/include/private"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/posix/include/FreeRTOS_POSIX"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/standard/common/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/platform/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/platform/freertos/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/platform/include/platform"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/secure_sockets/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/logging/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/pkcs11/corePKCS11/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/standard/crypto/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/standard/utils/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/wifi/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/aws/defender/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/standard/mqtt/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/coreMQTT/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/coreMQTT/source/interface"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/backoff_algorithm/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/transport/secure_sockets"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/standard/serializer/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/aws/shadow/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/c_sdk/standard/https/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/coreHTTP/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/coreHTTP/source/interface"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/coreHTTP/source/dependency/3rdparty/http_parser"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/aws/greengrass/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/aws/ota/src"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/aws/ota/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/mbedtls/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/freertos_plus/standard/freertos_plus_cli/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/coreJSON/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/device_shadow_for_aws/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/device_defender_for_aws/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/jobs_for_aws/source/include"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/pkcs11"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/mbedtls_config"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/mbedtls/include/mbedtls"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/mbedtls_utils"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/tinycbor/src"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/3rdparty/jsmn"/>
+									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/freertos_kernel/include"/>
 									<listOptionValue builtIn="false" value="${CG_TOOL_ROOT}/include"/>
 								</option>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.DEBUGGING_MODEL.902230565" name="Debugging model" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.DEBUGGING_MODEL" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.DEBUGGING_MODEL.SYMDEBUG__DWARF" valueType="enumerated"/>
