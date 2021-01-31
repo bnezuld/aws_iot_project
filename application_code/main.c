@@ -144,7 +144,15 @@ void vApplicationDaemonTaskStartupHook( void )
     {
         WIFI_On();
 
-        WIFIReturnCode_t xWifiStatus = WIFI_AutoConnectAP();// &( xNetworkParams ) );
+        //WIFINetworkParams_t xNetworkParams;
+        WIFIReturnCode_t xWifiStatus;
+        //xNetworkParams.pcSSID = NULL;
+        //xNetworkParams.ucSSIDLength = 0;
+        //xNetworkParams.pcPassword = NULL;
+        //xNetworkParams.ucPasswordLength = 0;
+        //xNetworkParams.xSecurity = eWiFiSecurityWPA2;
+
+        xWifiStatus = WIFI_ConnectAP( NULL );
         if(xWifiStatus == eWiFiSuccess)
         {
          //Connected to AP.

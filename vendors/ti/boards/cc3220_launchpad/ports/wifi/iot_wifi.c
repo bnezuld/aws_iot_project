@@ -504,44 +504,6 @@ WIFIReturnCode_t WIFI_Off( void )
     return xRetVal;
 }
 
-WIFIReturnCode_t WIFI_AutoConnectAP( const WIFINetworkParams_t * const pxNetworkParams )
-{
-    uint8_t g_usConnectIndex = 0;
-    int32_t lRetVal;
-    unsigned long ulIP = 0;
-    unsigned long ulSubMask = 0;
-    unsigned long ulDefGateway = 0;
-    unsigned long ulDns = 0;
-
-    lRetVal = sl_WlanPolicySet(SL_WLAN_POLICY_CONNECTION,
-                                    SL_WLAN_CONNECTION_POLICY(1, 0, 0, 0), NULL, 0);
-
-    /* Wait for ~10 sec to check if connection to desire AP succeeds      */
-    while (g_usConnectIndex < 10)
-    {
-        sleep(1);
-
-        if (IS_CONNECTED(g_ulStatus) && IS_IP_ACQUIRED(g_ulStatus))
-        {
-            break;
-        }
-        g_usConnectIndex++;
-    }
-
-    if(!(IS_CONNECTED(g_ulStatus)) || !(IS_IP_ACQUIRED(g_ulStatus)))
-    {
-        return -1;
-    }
-
-    /* Get IP address                                                         */
-    lRetVal = Network_IF_IpConfigGet(&ulIP, &ulSubMask, &ulDefGateway, &ulDns);
-    ASSERT_ON_ERROR(lRetVal);
-
-    configPRINTF(("Device IP Address is %d.%d.%d.%d \n\r\n\r", SL_IPV4_BYTE(ulIP, 3), SL_IPV4_BYTE(ulIP, 2), SL_IPV4_BYTE(ulIP, 1), SL_IPV4_BYTE(ulIP, 0)));
-
-    return 0;
-}
-
 /*-----------------------------------------------------------*/
 
 WIFIReturnCode_t WIFI_ConnectAP( const WIFINetworkParams_t * const pxNetworkParams )
@@ -552,18 +514,57 @@ WIFIReturnCode_t WIFI_ConnectAP( const WIFINetworkParams_t * const pxNetworkPara
     char cSSID[ wificonfigMAX_SSID_LEN + 1 ] = { 0 };
     char cPassword[ wificonfigMAX_PASSPHRASE_LEN + 1 ] = { 0 };
 
-    configASSERT( pxNetworkParams != NULL );
-    configASSERT( pxNetworkParams->ucSSIDLength > 0 );
+    //configASSERT( pxNetworkParams != NULL );
+    //configASSERT( pxNetworkParams->ucSSIDLength > 0 );
 
-    if ( pxNetworkParams->xSecurity != eWiFiSecurityOpen )
-    {
-        configASSERT( pxNetworkParams->xPassword.xWPA.ucLength > 0 );
-    }
+    //if ( pxNetworkParams->xSecurity != eWiFiSecurityOpen )
+    //{
+    //    configASSERT( pxNetworkParams->xPassword.xWPA.ucLength > 0 );
+    //}
 
     /* Try to acquire the semaphore. */
     if( xSemaphoreTake( xWiFiSemaphoreHandle, xSemaphoreWaitTicks ) == pdTRUE )
     {
-        if( pxNetworkParams->ucSSIDLength <= wificonfigMAX_SSID_LEN )
+        if(pxNetworkParams == NULL)
+        {
+            uint8_t g_usConnectIndex = 0;
+            //int32_t lRetVal;
+            unsigned long ulIP = 0;
+            unsigned long ulSubMask = 0;
+            unsigned long ulDefGateway = 0;
+            unsigned long ulDns = 0;
+
+            lRetVal = sl_WlanPolicySet(SL_WLAN_POLICY_CONNECTION,
+                                            SL_WLAN_CONNECTION_POLICY(1, 0, 0, 0), NULL, 0);
+
+            /* Wait for ~10 sec to check if connection to desire AP succeeds      */
+            while (g_usConnectIndex < 10)
+            {
+                sleep(1);
+
+                if (IS_CONNECTED(g_ulStatus) && IS_IP_ACQUIRED(g_ulStatus))
+                {
+                    break;
+                }
+                g_usConnectIndex++;
+            }
+
+            if(!(IS_CONNECTED(g_ulStatus)) || !(IS_IP_ACQUIRED(g_ulStatus)))
+            {
+                lRetVal = eWiFiFailure;
+            }else
+            {
+
+                /* Get IP address                                                         */
+                lRetVal = Network_IF_IpConfigGet(&ulIP, &ulSubMask, &ulDefGateway, &ulDns);
+                ASSERT_ON_ERROR(lRetVal);
+
+                configPRINTF(("Device IP Address is %d.%d.%d.%d \n\r\n\r", SL_IPV4_BYTE(ulIP, 3), SL_IPV4_BYTE(ulIP, 2), SL_IPV4_BYTE(ulIP, 1), SL_IPV4_BYTE(ulIP, 0)));
+
+                lRetVal = eWiFiSuccess;
+            }
+        }
+        else if( pxNetworkParams->ucSSIDLength <= wificonfigMAX_SSID_LEN && pxNetworkParams->ucSSIDLength > 0  && (pxNetworkParams->xSecurity == eWiFiSecurityOpen || pxNetworkParams->xPassword.xWPA.ucLength > 0) )
         {
             /* Write the input constant SSID to the local copy. A local copy of the
             * Wi-Fi SSID parameter is needed because Network_IF_ConnectAP() will
