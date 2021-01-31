@@ -851,11 +851,6 @@
 			<locationURI>BASE_DIR_ROOT/libraries/jobs_for_aws/source/include/jobs.h</locationURI>
 		</link>
 		<link>
-			<name>vendors/ti/boards/cc3220_launchpad/CC3220SF.ccxml</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/boards/cc3220_launchpad/CC3220SF.ccxml</locationURI>
-		</link>
-		<link>
 			<name>libraries/3rdparty/mbedtls/include/mbedtls/aes.h</name>
 			<type>1</type>
 			<locationURI>BASE_DIR_ROOT/libraries/3rdparty/mbedtls/include/mbedtls/aes.h</locationURI>
@@ -1811,74 +1806,9 @@
 			<locationURI>BASE_DIR_ROOT/libraries/freertos_plus/aws/ota/src/mqtt/aws_iot_ota_mqtt.h</locationURI>
 		</link>
 		<link>
-			<name>vendors/ti/boards/cc3220_launchpad/ports/ota/aws_ota_pal.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/boards/cc3220_launchpad/ports/ota/aws_ota_pal.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/boards/cc3220_launchpad/ports/pkcs11/core_pkcs11_pal.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/boards/cc3220_launchpad/ports/pkcs11/core_pkcs11_pal.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/boards/cc3220_launchpad/ports/posix/FreeRTOS_POSIX_portable.h</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/boards/cc3220_launchpad/ports/posix/FreeRTOS_POSIX_portable.h</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/boards/cc3220_launchpad/ports/secure_sockets/iot_secure_sockets.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/boards/cc3220_launchpad/ports/secure_sockets/iot_secure_sockets.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/boards/cc3220_launchpad/ports/wifi/iot_wifi.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/boards/cc3220_launchpad/ports/wifi/iot_wifi.c</locationURI>
-		</link>
-		<link>
 			<name>libraries/abstractions/pkcs11/corePKCS11/source/portable/mbedtls/core_pkcs11_mbedtls.c</name>
 			<type>1</type>
 			<locationURI>BASE_DIR_ROOT/libraries/abstractions/pkcs11/corePKCS11/source/portable/mbedtls/core_pkcs11_mbedtls.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/ClockP_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/ClockP_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/DebugP_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/DebugP_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPCC32XX_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPCC32XX_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/MutexP_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/MutexP_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerCC32XX_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerCC32XX_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/SemaphoreP_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/SemaphoreP_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/SystemP_freertos.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/SystemP_freertos.c</locationURI>
-		</link>
-		<link>
-			<name>vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/startup/startup_cc32xx_ccs.c</name>
-			<type>1</type>
-			<locationURI>BASE_DIR_ROOT/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/startup/startup_cc32xx_ccs.c</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
