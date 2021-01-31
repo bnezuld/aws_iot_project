@@ -31,6 +31,7 @@
  */
 
 /* Standard includes. */
+#include <application_code/tasks/include/ap_mode_task.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -45,7 +46,7 @@
 #include "core_pkcs11_config.h"
 
 /* Demo priorities & stack sizes. */
-#include "aws_demo_config.h"
+//#include "aws_demo_config.h"
 
 /* FreeRTOS header files. */
 #include "FreeRTOS.h"
@@ -55,7 +56,7 @@
 #include "iot_wifi.h"
 
 /* Demo files. */
-#include "aws_demo.h"
+//#include "aws_demo.h"
 #include "iot_logging_task.h"
 #include "iot_system_init.h"
 #include "aws_dev_mode_key_provisioning.h"
@@ -65,7 +66,6 @@
 #include <ti/drivers/SPI.h>
 #include <ti/drivers/net/wifi/simplelink.h>
 
-/* CC3220SF board file. */
 #include "Board.h"
 
 /* Logging Task Defines. */
@@ -142,23 +142,16 @@ void vApplicationDaemonTaskStartupHook( void )
     /* Initialize the AWS Libraries system. */
     if( SYSTEM_Init() == pdPASS )
     {
-        /* A simple example to demonstrate key and certificate provisioning in
-         * flash using PKCS#11 interface. This should be replaced
-         * by production ready key provisioning mechanism. This function must be called after
-         * initializing the TI File System using WIFI_On. */
         WIFI_On();
-        vDevModeKeyProvisioning();
-        prvProvisionRootCA();
 
-        /* Show the possible security alerts that will affect re-flashing the device.
-         * When the number of security alerts reaches the threshold, the device file system is locked and
-         * the device cannot be automatically flashed, but must be reprogrammed with uniflash. This routine is placed
-         * here for debugging purposes. */
-        prvShowTiCc3220SecurityAlertCounts();
-        WIFI_Off();
-
-        configPRINTF( ( "Running Demos.\r\n" ) );
-        DEMO_RUNNER_RunDemos();
+        WIFIReturnCode_t xWifiStatus = WIFI_AutoConnectAP();// &( xNetworkParams ) );
+        if(xWifiStatus == eWiFiSuccess)
+        {
+         //Connected to AP.
+        }else{
+            WIFI_Off();
+            AP_Task(NULL);
+        }
     }
 }
 
