@@ -62,7 +62,7 @@ $(document).ready(function() {
 	
 // index
 	$('#startApp').on('click', function(e){
-		window.location.href = "demo.html";
+		window.location.href = "settings.html";
 	});
 
 // popup
