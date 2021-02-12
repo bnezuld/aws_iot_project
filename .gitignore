@@ -3,3 +3,5 @@ Debug
 .ccsproject
 demos/include/aws_clientcredential.h
 demos/include/aws_clientcredential_keys.h
+application_code/config/aws_clientcredential_keys.h
+application_code/config/aws_clientcredential.h
