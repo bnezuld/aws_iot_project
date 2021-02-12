@@ -64,18 +64,32 @@
 #include "backoff_algorithm.h"
 
 /* Include header for root CA certificates. */
+<<<<<<< HEAD
 #include "pkcs11_helpers.h""
+=======
+#include <application_code/tasks/include/pkcs11_helpers.h>
+>>>>>>> fc7916f0cf644e3ea434611b022b9e33336146fd
 
 /* Transport interface implementation include header for TLS. */
 #include "transport_secure_sockets.h"
 
 /* Include header for connection configurations. */
+<<<<<<< HEAD
 #include "aws_clientcredential.h"
 #include "aws_clientcredential_keys.h"
+=======
+#include <application_code/tasks/include/iot_config.h>
+>>>>>>> fc7916f0cf644e3ea434611b022b9e33336146fd
 
 /* Include header for root CA certificates. */
 #include "iot_default_root_certificates.h"
 
+<<<<<<< HEAD
+=======
+/* Include header for root CA certificates. */
+#include <application_code/tasks/include/iot_metrics.h>
+
+>>>>>>> fc7916f0cf644e3ea434611b022b9e33336146fd
 /* Include AWS IoT metrics macros header. */
 #include "aws_iot_metrics.h"
 
