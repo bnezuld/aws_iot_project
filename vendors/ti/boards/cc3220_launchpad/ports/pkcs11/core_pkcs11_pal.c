@@ -32,12 +32,12 @@
  */
 
 /* FreeRTOS includes. */
+#include <demos/include/aws_clientcredential.h>
 #include "FreeRTOS.h"
 #include "FreeRTOSIPConfig.h"
 #include "task.h"
 #include "iot_crypto.h"
 #include "core_pkcs11.h"
-#include "aws_clientcredential.h"
 #include "aws_secure_sockets_config.h"
 #include "core_pkcs11_config.h"
 #include "core_pkcs11_pal.h"

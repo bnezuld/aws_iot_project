@@ -43,15 +43,11 @@
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.LITTLE_ENDIAN.2031715668" name="Little endian code [See 'General' page to edit] (--little_endian, -me)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.LITTLE_ENDIAN" value="true" valueType="boolean"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.INCLUDE_PATH.1680333660" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_16.9.compilerID.INCLUDE_PATH" valueType="includePath">
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/application_code/tasks/include"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/application_code/aws_helper/include"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/config_files"/>
+									<listOptionValue builtIn="false" value="${ProjDirPath}/application_code/config"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/application_code/ti_code"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/network_manager"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/dev_mode_key_provisioning/include"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/common/pkcs11_helpers"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/common/http_demo_helpers"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/common/mqtt_demo_helpers"/>
-									<listOptionValue builtIn="false" value="${ProjDirPath}/demos/device_defender_for_aws"/>
 									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/vendors/ti/SimpleLink_CC32xx/v2_10_00_04/source"/>
 									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/freertos_kernel/portable/CCS/ARM_CM3"/>
 									<listOptionValue builtIn="false" value="${BASE_DIR_ROOT}/libraries/abstractions/posix/include"/>
@@ -165,7 +161,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="application_code/tasks/pkcs11_helpers.c|application_code/tasks/mqtt_auth.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/startup/startup_cc32xx_iar.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432_freertos.c|demos/device_defender_for_aws/metrics_collector/lwip|demos/demo_runner/aws_demo_network_addr.c|demos/device_defender_for_aws/metrics_collector/freertos_plus_tcp|CC3220sf_startup_ccs_gcc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="application_code/aws_helper/aws_iot_network_manager.c|application_code/tasks/ota.c|demos|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/startup/startup_cc32xx_iar.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432_freertos.c|demos/device_defender_for_aws/metrics_collector/lwip|demos/demo_runner/aws_demo_network_addr.c|demos/device_defender_for_aws/metrics_collector/freertos_plus_tcp|CC3220sf_startup_ccs_gcc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

@@ -44,7 +44,7 @@
 #include <ti/drivers/net/wifi/simplelink.h>
 
 /* Credentials includes. */
-#include "aws_clientcredential.h"
+#include <demos/include/aws_clientcredential.h>
 #include "iot_default_root_certificates.h"
 
 #undef _SECURE_SOCKETS_WRAPPER_NOT_REDEFINE

@@ -31,10 +31,11 @@
  */
 
 /* Standard includes. */
-#include <application_code/tasks/include/ap_mode_task.h>
-//#include <application_code/tasks/include/mqtt_auth.h>
-#include "mqtt_demo_mutual_auth_config.h"
-#include "aws_demo.h"
+#include "ap_mode_task.h"
+#include "mqtt_auth.h"
+#include "ota.h"
+//#include "mqtt_demo_mutual_auth_config.h"
+//#include "aws_demo.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -71,12 +72,15 @@
 
 #include "Board.h"
 
+//#include <application_code/tasks/include/iot_network_manager_private.h>
+
+
 /* Logging Task Defines. */
 #define mainLOGGING_MESSAGE_QUEUE_LENGTH    ( 15 )
 #define mainLOGGING_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE * 8 )
 
 /* Application version info. */
-#include "aws_application_version.h"
+#include <aws_application_version.h>
 
 
 /* The length of the logging task's queue to hold messages. */
@@ -139,9 +143,6 @@ void vApplicationDaemonTaskStartupHook( void )
     // Emit some serial port debugging
     vTaskDelay( mainLOGGING_WIFI_STATUS_DELAY );
 
-
-
-
     /* Initialize the AWS Libraries system. */
     if( SYSTEM_Init() == pdPASS )
     {
@@ -158,8 +159,39 @@ void vApplicationDaemonTaskStartupHook( void )
         xWifiStatus = WIFI_ConnectAP( NULL );
         if(xWifiStatus == eWiFiSuccess)
         {
-         //Connected to AP.
-            RunCoreMqttMutualAuthDemo(NULL, NULL, NULL, NULL, NULL);
+            //WIFI_Off();
+            /* A simple example to demonstrate key and certificate provisioning in
+             * flash using PKCS#11 interface. This should be replaced
+             * by production ready key provisioning mechanism. This function must be called after
+             * initializing the TI File System using WIFI_On. */
+            //WIFI_On();
+            //vDevModeKeyProvisioning();
+            //prvProvisionRootCA();
+
+            /* Show the possible security alerts that will affect re-flashing the device.
+             * When the number of security alerts reaches the threshold, the device file system is locked and
+             * the device cannot be automatically flashed, but must be reprogrammed with uniflash. This routine is placed
+             * here for debugging purposes. */
+            //prvShowTiCc3220SecurityAlertCounts();
+            //WIFI_Off();
+
+            //configPRINTF( ( "Running Demos.\r\n" ) );
+            //DEMO_RUNNER_RunDemos();
+            RunCoreMqttMutualAuthDemo();
+
+            /*uint32_t demoConnectedNetwork = AWSIOT_NETWORK_TYPE_NONE;
+            const IotNetworkInterface_t * pNetworkInterface = NULL;
+            void * pConnectionParams = NULL, * pCredentials = NULL;
+
+            pNetworkInterface = AwsIotNetworkManager_GetNetworkInterface( demoConnectedNetwork );
+            pConnectionParams = AwsIotNetworkManager_GetConnectionParams( demoConnectedNetwork );
+            pCredentials = AwsIotNetworkManager_GetCredentials( demoConnectedNetwork );
+
+            vStartOTAUpdateDemoTask( true,
+                                     clientcredentialIOT_THING_NAME,
+                                     pConnectionParams,
+                                     pCredentials,
+                                     pNetworkInterface );//*/
         }else{
             WIFI_Off();
             AP_Task(NULL);
@@ -231,110 +263,110 @@ static void prvShowTiCc3220SecurityAlertCounts( void )
     }
 }
 
-///* configUSE_STATIC_ALLOCATION is set to 1, so the application must provide an
-// * implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
-// * used by the Idle task. */
-//void vApplicationGetIdleTaskMemory( StaticTask_t ** ppxIdleTaskTCBBuffer,
-//                                    StackType_t ** ppxIdleTaskStackBuffer,
-//                                    uint32_t * pulIdleTaskStackSize )
-//{
-//    /* If the buffers to be provided to the Idle task are declared inside this
-//     * function then they must be declared static - otherwise they will be allocated on
-//     * the stack and so not exists after this function exits. */
-//    static StaticTask_t xIdleTaskTCB;
-//    static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
-//
-//    /* Pass out a pointer to the StaticTask_t structure in which the Idle
-//     * task's state will be stored. */
-//    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
-//
-//    /* Pass out the array that will be used as the Idle task's stack. */
-//    *ppxIdleTaskStackBuffer = uxIdleTaskStack;
-//
-//    /* Pass out the size of the array pointed to by *ppxIdleTaskStackBuffer.
-//     * Note that, as the array is necessarily of type StackType_t,
-//     * configMINIMAL_STACK_SIZE is specified in words, not bytes. */
-//    *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
-//}
-///*-----------------------------------------------------------*/
-//
-///**
-// * @brief This is to provide the memory that is used by the RTOS daemon/time task.
-// *
-// * If configUSE_STATIC_ALLOCATION is set to 1, so the application must provide an
-// * implementation of vApplicationGetTimerTaskMemory() to provide the memory that is
-// * used by the RTOS daemon/time task.
-// */
-//void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer,
-//                                     StackType_t ** ppxTimerTaskStackBuffer,
-//                                     uint32_t * pulTimerTaskStackSize )
-//{
-//    /* If the buffers to be provided to the Timer task are declared inside this
-//     * function then they must be declared static - otherwise they will be allocated on
-//     * the stack and so not exists after this function exits. */
-//    static StaticTask_t xTimerTaskTCB;
-//    static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
-//
-//    /* Pass out a pointer to the StaticTask_t structure in which the Idle
-//     * task's state will be stored. */
-//    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
-//
-//    /* Pass out the array that will be used as the Timer task's stack. */
-//    *ppxTimerTaskStackBuffer = uxTimerTaskStack;
-//
-//    /* Pass out the size of the array pointed to by *ppxTimerTaskStackBuffer.
-//     * Note that, as the array is necessarily of type StackType_t,
-//     * configMINIMAL_STACK_SIZE is specified in words, not bytes. */
-//    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
-//}
-///*-----------------------------------------------------------*/
-//
-///**
-// * @brief Warn user if pvPortMalloc fails.
-// *
-// * Called if a call to pvPortMalloc() fails because there is insufficient
-// * free memory available in the FreeRTOS heap.  pvPortMalloc() is called
-// * internally by FreeRTOS API functions that create tasks, queues, software
-// * timers, and semaphores.  The size of the FreeRTOS heap is set by the
-// * configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h.
-// *
-//*/
-//void vApplicationMallocFailedHook()
-//{
-//    configPRINT_STRING( ( "ERROR: Malloc failed to allocate memory\r\n" ) );
-//    taskDISABLE_INTERRUPTS();
-//
-//    /* Loop forever */
-//    for( ; ; )
-//    {
-//    }
-//}
-//
-///*-----------------------------------------------------------*/
-//
-///**
-// * @brief Loop forever if stack overflow is detected.
-// *
-// * If configCHECK_FOR_STACK_OVERFLOW is set to 1,
-// * this hook provides a location for applications to
-// * define a response to a stack overflow.
-// *
-// * Use this hook to help identify that a stack overflow
-// * has occurred.
-// *
-// */
-//void vApplicationStackOverflowHook( TaskHandle_t xTask,
-//                                    char * pcTaskName )
-//{
-//    configPRINT_STRING( ( "ERROR: stack overflow\r\n" ) );
-//    portDISABLE_INTERRUPTS();
-//
-//    /* Unused Parameters */
-//    ( void ) xTask;
-//    ( void ) pcTaskName;
-//
-//    /* Loop forever */
-//    for( ; ; )
-//    {
-//    }
-//}
+/* configUSE_STATIC_ALLOCATION is set to 1, so the application must provide an
+ * implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
+ * used by the Idle task. */
+void vApplicationGetIdleTaskMemory( StaticTask_t ** ppxIdleTaskTCBBuffer,
+                                    StackType_t ** ppxIdleTaskStackBuffer,
+                                    uint32_t * pulIdleTaskStackSize )
+{
+    /* If the buffers to be provided to the Idle task are declared inside this
+     * function then they must be declared static - otherwise they will be allocated on
+     * the stack and so not exists after this function exits. */
+    static StaticTask_t xIdleTaskTCB;
+    static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
+
+    /* Pass out a pointer to the StaticTask_t structure in which the Idle
+     * task's state will be stored. */
+    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+
+    /* Pass out the array that will be used as the Idle task's stack. */
+    *ppxIdleTaskStackBuffer = uxIdleTaskStack;
+
+    /* Pass out the size of the array pointed to by *ppxIdleTaskStackBuffer.
+     * Note that, as the array is necessarily of type StackType_t,
+     * configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+    *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+/*-----------------------------------------------------------*/
+
+/**
+ * @brief This is to provide the memory that is used by the RTOS daemon/time task.
+ *
+ * If configUSE_STATIC_ALLOCATION is set to 1, so the application must provide an
+ * implementation of vApplicationGetTimerTaskMemory() to provide the memory that is
+ * used by the RTOS daemon/time task.
+ */
+void vApplicationGetTimerTaskMemory( StaticTask_t ** ppxTimerTaskTCBBuffer,
+                                     StackType_t ** ppxTimerTaskStackBuffer,
+                                     uint32_t * pulTimerTaskStackSize )
+{
+    /* If the buffers to be provided to the Timer task are declared inside this
+     * function then they must be declared static - otherwise they will be allocated on
+     * the stack and so not exists after this function exits. */
+    static StaticTask_t xTimerTaskTCB;
+    static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
+
+    /* Pass out a pointer to the StaticTask_t structure in which the Idle
+     * task's state will be stored. */
+    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+
+    /* Pass out the array that will be used as the Timer task's stack. */
+    *ppxTimerTaskStackBuffer = uxTimerTaskStack;
+
+    /* Pass out the size of the array pointed to by *ppxTimerTaskStackBuffer.
+     * Note that, as the array is necessarily of type StackType_t,
+     * configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+/*-----------------------------------------------------------*/
+
+/**
+ * @brief Warn user if pvPortMalloc fails.
+ *
+ * Called if a call to pvPortMalloc() fails because there is insufficient
+ * free memory available in the FreeRTOS heap.  pvPortMalloc() is called
+ * internally by FreeRTOS API functions that create tasks, queues, software
+ * timers, and semaphores.  The size of the FreeRTOS heap is set by the
+ * configTOTAL_HEAP_SIZE configuration constant in FreeRTOSConfig.h.
+ *
+*/
+void vApplicationMallocFailedHook()
+{
+    configPRINT_STRING( ( "ERROR: Malloc failed to allocate memory\r\n" ) );
+    taskDISABLE_INTERRUPTS();
+
+    /* Loop forever */
+    for( ; ; )
+    {
+    }
+}
+
+/*-----------------------------------------------------------*/
+
+/**
+ * @brief Loop forever if stack overflow is detected.
+ *
+ * If configCHECK_FOR_STACK_OVERFLOW is set to 1,
+ * this hook provides a location for applications to
+ * define a response to a stack overflow.
+ *
+ * Use this hook to help identify that a stack overflow
+ * has occurred.
+ *
+ */
+void vApplicationStackOverflowHook( TaskHandle_t xTask,
+                                    char * pcTaskName )
+{
+    configPRINT_STRING( ( "ERROR: stack overflow\r\n" ) );
+    portDISABLE_INTERRUPTS();
+
+    /* Unused Parameters */
+    ( void ) xTask;
+    ( void ) pcTaskName;
+
+    /* Loop forever */
+    for( ; ; )
+    {
+    }
+}
