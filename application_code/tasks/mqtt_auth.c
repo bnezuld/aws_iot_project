@@ -51,7 +51,7 @@
 #include <stdlib.h>
 
 /* Demo Specific configs. */
-#include <application_code/tasks/include/mqtt_auth.h>
+#include "mqtt_auth.h"
 
 /* Kernel includes. */
 #include "FreeRTOS.h"

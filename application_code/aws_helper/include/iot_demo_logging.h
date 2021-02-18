@@ -23,14 +23,36 @@
  * http://www.FreeRTOS.org
  */
 
-#ifndef _AWS_APPLICATION_VERSION_H_
-#define _AWS_APPLICATION_VERSION_H_
+/**
+ * @file iot_demo_logging.h
+ * @brief Sets the log level for all demos.
+ */
 
-#include "iot_appversion32.h"
-extern const AppVersion32_t xAppFirmwareVersion;
+#ifndef IOT_DEMO_LOGGING_H_
+#define IOT_DEMO_LOGGING_H_
 
-#define APP_VERSION_MAJOR    0
-#define APP_VERSION_MINOR    9
-#define APP_VERSION_BUILD    4
+/* The config header is always included first. */
+#include "iot_config.h"
 
+/* Configure logs for the demos. The demos will have a log level of:
+ * - IOT_LOG_LEVEL_DEMO if defined.
+ * - IOT_LOG_LEVEL_GLOBAL if defined and IOT_LOG_LEVEL_DEMO is undefined.
+ * - IOT_LOG_NONE if neither IOT_LOG_LEVEL_DEMO nor IOT_LOG_LEVEL_GLOBAL are defined.
+ */
+#ifdef IOT_LOG_LEVEL_DEMO
+    #define LIBRARY_LOG_LEVEL        IOT_LOG_LEVEL_DEMO
+#else
+    #ifdef IOT_LOG_LEVEL_GLOBAL
+        #define LIBRARY_LOG_LEVEL    IOT_LOG_LEVEL_GLOBAL
+    #else
+        #define LIBRARY_LOG_LEVEL    IOT_LOG_NONE
+    #endif
 #endif
+
+/* Set the library name to print with the demos. */
+#define LIBRARY_LOG_NAME    ( "DEMO" )
+
+/* Include the logging setup header. This enables the logs. */
+#include "iot_logging_setup.h"
+
+#endif /* ifndef IOT_DEMO_LOGGING_H_ */

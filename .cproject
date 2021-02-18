@@ -161,7 +161,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="application_code/aws_helper/aws_iot_network_manager.c|application_code/tasks/ota.c|demos|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/startup/startup_cc32xx_iar.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432_freertos.c|demos/device_defender_for_aws/metrics_collector/lwip|demos/demo_runner/aws_demo_network_addr.c|demos/device_defender_for_aws/metrics_collector/freertos_plus_tcp|CC3220sf_startup_ccs_gcc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="demos|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/startup/startup_cc32xx_iar.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/PowerMSP432_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432E4_freertos.c|vendors/ti/SimpleLink_CC32xx/v2_10_00_04/kernel/freertos/dpl/HwiPMSP432_freertos.c|demos/device_defender_for_aws/metrics_collector/lwip|demos/demo_runner/aws_demo_network_addr.c|demos/device_defender_for_aws/metrics_collector/freertos_plus_tcp|CC3220sf_startup_ccs_gcc.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

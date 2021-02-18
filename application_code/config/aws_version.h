@@ -23,14 +23,13 @@
  * http://www.FreeRTOS.org
  */
 
-#ifndef _AWS_APPLICATION_VERSION_H_
-#define _AWS_APPLICATION_VERSION_H_
+#include "aws_application_version.h"
 
-#include "iot_appversion32.h"
-extern const AppVersion32_t xAppFirmwareVersion;
 
-#define APP_VERSION_MAJOR    0
-#define APP_VERSION_MINOR    9
-#define APP_VERSION_BUILD    4
-
-#endif
+/* Declare the firmware version structure for all to see. */
+const AppVersion32_t xAppFirmwareVersion =
+{
+    .u.x.ucMajor = APP_VERSION_MAJOR,
+    .u.x.ucMinor = APP_VERSION_MINOR,
+    .u.x.usBuild = APP_VERSION_BUILD,
+};

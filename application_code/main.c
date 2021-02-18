@@ -72,15 +72,20 @@
 
 #include "Board.h"
 
-//#include <application_code/tasks/include/iot_network_manager_private.h>
-
+#include "iot_network_manager_private.h"
+/* Platform layer types include. */
+#include "types/iot_platform_types.h"
+#include "ota.h"
 
 /* Logging Task Defines. */
 #define mainLOGGING_MESSAGE_QUEUE_LENGTH    ( 15 )
 #define mainLOGGING_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE * 8 )
 
 /* Application version info. */
-#include <aws_application_version.h>
+#include "aws_version.h"
+#include "aws_application_version.h"
+
+#include "iot_threads.h"
 
 
 /* The length of the logging task's queue to hold messages. */
@@ -159,39 +164,11 @@ void vApplicationDaemonTaskStartupHook( void )
         xWifiStatus = WIFI_ConnectAP( NULL );
         if(xWifiStatus == eWiFiSuccess)
         {
-            //WIFI_Off();
-            /* A simple example to demonstrate key and certificate provisioning in
-             * flash using PKCS#11 interface. This should be replaced
-             * by production ready key provisioning mechanism. This function must be called after
-             * initializing the TI File System using WIFI_On. */
-            //WIFI_On();
-            //vDevModeKeyProvisioning();
-            //prvProvisionRootCA();
-
-            /* Show the possible security alerts that will affect re-flashing the device.
-             * When the number of security alerts reaches the threshold, the device file system is locked and
-             * the device cannot be automatically flashed, but must be reprogrammed with uniflash. This routine is placed
-             * here for debugging purposes. */
-            //prvShowTiCc3220SecurityAlertCounts();
-            //WIFI_Off();
-
-            //configPRINTF( ( "Running Demos.\r\n" ) );
-            //DEMO_RUNNER_RunDemos();
-            RunCoreMqttMutualAuthDemo();
-
-            /*uint32_t demoConnectedNetwork = AWSIOT_NETWORK_TYPE_NONE;
-            const IotNetworkInterface_t * pNetworkInterface = NULL;
-            void * pConnectionParams = NULL, * pCredentials = NULL;
-
-            pNetworkInterface = AwsIotNetworkManager_GetNetworkInterface( demoConnectedNetwork );
-            pConnectionParams = AwsIotNetworkManager_GetConnectionParams( demoConnectedNetwork );
-            pCredentials = AwsIotNetworkManager_GetCredentials( demoConnectedNetwork );
-
-            vStartOTAUpdateDemoTask( true,
-                                     clientcredentialIOT_THING_NAME,
-                                     pConnectionParams,
-                                     pCredentials,
-                                     pNetworkInterface );//*/
+            //RunCoreMqttMutualAuthDemo();
+            Iot_CreateDetachedThread( vStartOTAUpdateDemoTask,
+                                      NULL,
+                                      democonfigDEMO_PRIORITY,
+                                      democonfigDEMO_STACKSIZE );
         }else{
             WIFI_Off();
             AP_Task(NULL);
