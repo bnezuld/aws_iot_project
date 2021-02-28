@@ -31,13 +31,11 @@
  */
 
 /* Standard includes. */
-#include "ap_mode_task.h"
-#include "mqtt_auth.h"
-#include "ota.h"
-//#include "mqtt_demo_mutual_auth_config.h"
-//#include "aws_demo.h"
 #include <stdint.h>
 #include <stdio.h>
+
+/*application includes*/
+#include "application_startup.h"
 
 /* EDIT THIS FILE:
  * Wi-Fi SSID, password & security settings,
@@ -151,28 +149,10 @@ void vApplicationDaemonTaskStartupHook( void )
     /* Initialize the AWS Libraries system. */
     if( SYSTEM_Init() == pdPASS )
     {
-        WIFI_On();
-
-        //WIFINetworkParams_t xNetworkParams;
-        WIFIReturnCode_t xWifiStatus;
-        //xNetworkParams.pcSSID = NULL;
-        //xNetworkParams.ucSSIDLength = 0;
-        //xNetworkParams.pcPassword = NULL;
-        //xNetworkParams.ucPasswordLength = 0;
-        //xNetworkParams.xSecurity = eWiFiSecurityWPA2;
-
-        xWifiStatus = WIFI_ConnectAP( NULL );
-        if(xWifiStatus == eWiFiSuccess)
-        {
-            //RunCoreMqttMutualAuthDemo();
-            Iot_CreateDetachedThread( vStartOTAUpdateDemoTask,
-                                      NULL,
-                                      democonfigDEMO_PRIORITY,
-                                      democonfigDEMO_STACKSIZE );
-        }else{
-            WIFI_Off();
-            AP_Task(NULL);
-        }
+        Iot_CreateDetachedThread( startup,
+                                  NULL,
+                                  democonfigDEMO_PRIORITY,
+                                  democonfigDEMO_STACKSIZE );
     }
 }
 

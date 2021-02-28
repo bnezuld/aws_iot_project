@@ -421,6 +421,7 @@ const IotNetworkInterface_t * pNetworkInterface;
 void vRunOTAUpdateDemo( const char * pIdentifier)
 {
     OTA_State_t eState;
+    OTA_ImageState_t eImageState;
     static OTA_ConnectionContext_t xOTAConnectionCtx;
 
     IotLogInfo( "OTA demo version %u.%u.%u\r\n",
@@ -485,7 +486,10 @@ void vRunOTAUpdateDemo( const char * pIdentifier)
                            App_OTACompleteCallback,
                            ( TickType_t ) ~0 );
 
-            while( ( ( eState = OTA_GetAgentState() ) != eOTA_AgentState_Stopped ) && _networkConnected )
+
+            //OTA_CheckForUpdate();
+            //OTA_GetImageState == eOTA_ImageState_Aborted
+            while( ( ( eState = OTA_GetAgentState() ) != eOTA_AgentState_Stopped ) && ( ( eImageState = OTA_GetImageState() ) != eOTA_ImageState_Aborted ) && _networkConnected )
             {
                 /* Wait forever for OTA traffic but allow other tasks to run and output statistics only once per second. */
                 IotClock_SleepMs( OTA_DEMO_TASK_DELAY_SECONDS * 1000 );
@@ -493,6 +497,7 @@ void vRunOTAUpdateDemo( const char * pIdentifier)
                 IotLogInfo( "State: %s  Received: %u   Queued: %u   Processed: %u   Dropped: %u\r\n", _pStateStr[ eState ],
                             OTA_GetPacketsReceived(), OTA_GetPacketsQueued(), OTA_GetPacketsProcessed(), OTA_GetPacketsDropped() );
             }
+            IotLogInfo( "State: %s" , _pStateStr[ eState ]);
 
             /* Check if we got network disconnect callback and suspend OTA Agent.*/
             if( _networkConnected == false )
@@ -507,13 +512,18 @@ void vRunOTAUpdateDemo( const char * pIdentifier)
                     }
                 }
             }
+            /*ota stopped because OTA image abort or OTA agent state is stopped*/
             else
             {
+
+                OTA_AgentShutdown(pdMS_TO_TICKS( 10 * 1000 ));
                 /* Try to close the MQTT connection. */
                 if( _mqttConnection != NULL )
                 {
                     IotMqtt_Disconnect( _mqttConnection, 0 );
                 }
+                /*exit this loop, will attempt to OTA after a restart*/
+                break;
             }
         }
         else
