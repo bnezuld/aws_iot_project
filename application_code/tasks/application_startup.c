@@ -10,6 +10,7 @@
 
 #include "ap_mode_task.h"
 #include "mqtt_auth.h"
+#include "mqtt_shadow.h"
 #include "ota.h"
 
 /* Wi-Fi Interface files. */
@@ -27,8 +28,9 @@ void startup(void * params){
     xWifiStatus = WIFI_ConnectAP( NULL );
     if(xWifiStatus == eWiFiSuccess)
     {
-        vStartOTAUpdateDemoTask(NULL);
-        RunCoreMqttMutualAuthDemo();
+        //vStartOTAUpdateDemoTask(NULL);
+        //RunCoreMqttMutualAuthDemo();
+        RunDeviceShadowDemo();
         /*Iot_CreateDetachedThread( vStartOTAUpdateDemoTask,
                                   NULL,
                                   democonfigDEMO_PRIORITY,

@@ -285,7 +285,7 @@ static BaseType_t prvConnectToServerWithBackoffRetries( NetworkContext_t * pNetw
  * @return pdFAIL on failure; pdPASS on successful MQTT connection.
  */
 static BaseType_t prvCreateMQTTConnectionWithBroker( MQTTContext_t * pxMQTTContext,
-                                                     NetworkContext_t * pxNetworkContext );
+                                                     NetworkContext_t * pxNetworkContext);
 
 /**
  * @brief Function to update variable #xTopicFilterContext with status
@@ -472,7 +472,7 @@ static MQTTFixedBuffer_t xBuffer =
 int RunCoreMqttMutualAuthDemo()
 {
     uint32_t ulPublishCount = 0U, ulTopicCount = 0U;
-    const uint32_t ulMaxPublishCount = 5UL;
+    const uint32_t ulMaxPublishCount = 100UL;
     NetworkContext_t xNetworkContext = { 0 };
     MQTTContext_t xMQTTContext = { 0 };
     MQTTStatus_t xMQTTStatus;
@@ -518,11 +518,12 @@ int RunCoreMqttMutualAuthDemo()
 
         /**************************** Subscribe. ******************************/
 
-        if( xDemoStatus == pdPASS )
+        if( xDemoStatus == pdPASS)
         {
             /* If server rejected the subscription request, attempt to resubscribe to topic.
              * Attempts are made according to the exponential backoff retry strategy
              * implemented in backoff_algorithm. */
+            LogInfo( ( "prvMQTTSubscribeWithBackoffRetries" ) );
             xDemoStatus = prvMQTTSubscribeWithBackoffRetries( &xMQTTContext );
         }
 
@@ -533,8 +534,8 @@ int RunCoreMqttMutualAuthDemo()
              ( ( xDemoStatus == pdPASS ) && ( ulPublishCount < ulMaxPublishCount ) );
              ulPublishCount++ )
         {
-            LogInfo( ( "Publish to the MQTT topic %s.", mqttexampleTOPIC ) );
-            xDemoStatus = prvMQTTPublishToTopic( &xMQTTContext );
+            //LogInfo( ( "Publish to the MQTT topic %s.", mqttexampleTOPIC ) );
+            //xDemoStatus = prvMQTTPublishToTopic( &xMQTTContext );
 
             if( xDemoStatus == pdPASS )
             {
@@ -553,8 +554,8 @@ int RunCoreMqttMutualAuthDemo()
             }
 
             /* Leave Connection Idle for some time. */
-            LogInfo( ( "Keeping Connection Idle..." ) );
-            vTaskDelay( mqttexampleDELAY_BETWEEN_PUBLISHES_TICKS );
+            //LogInfo( ( "Keeping Connection Idle..." ) );
+            //vTaskDelay( mqttexampleDELAY_BETWEEN_PUBLISHES_TICKS );
         }
 
         /************************ Unsubscribe from the topic. **************************/
@@ -768,13 +769,13 @@ static BaseType_t prvConnectToServerWithBackoffRetries( NetworkContext_t * pxNet
 /*-----------------------------------------------------------*/
 
 static BaseType_t prvCreateMQTTConnectionWithBroker( MQTTContext_t * pxMQTTContext,
-                                                     NetworkContext_t * pxNetworkContext )
+                                                     NetworkContext_t * pxNetworkContext)
 {
     MQTTStatus_t xResult;
     MQTTConnectInfo_t xConnectInfo;
-    bool xSessionPresent;
     TransportInterface_t xTransport;
     BaseType_t xStatus = pdFAIL;
+    bool xSessionPresent;
 
     /* Fill in Transport Interface send and receive function pointers. */
     xTransport.pNetworkContext = pxNetworkContext;
@@ -825,7 +826,7 @@ static BaseType_t prvCreateMQTTConnectionWithBroker( MQTTContext_t * pxMQTTConte
     else
     {
         /* Successfully established and MQTT connection with the broker. */
-        LogInfo( ( "An MQTT connection is established with %s.", democonfigMQTT_BROKER_ENDPOINT ) );
+        LogInfo( ( "An MQTT connection is established with %s. session present: %s", democonfigMQTT_BROKER_ENDPOINT, xSessionPresent  ? "true" : "false" ) );
         xStatus = pdPASS;
     }
 
