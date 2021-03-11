@@ -76,6 +76,8 @@
 /* Kernel includes. */
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
+#include "event_groups.h"
 
 /* SHADOW API header. */
 #include "shadow.h"
@@ -113,6 +115,7 @@
     "\"powerOn\":%01d"          \
     "}"                         \
     "},"                        \
+    "\"version\":%lu,"      \
     "\"clientToken\":\"%06lu\"" \
     "}"
 
@@ -156,6 +159,7 @@
     "\"powerOn\":%01d"          \
     "}"                         \
     "},"                        \
+    "\"version\":%lu,"      \
     "\"clientToken\":\"%06lu\"" \
     "}"
 
@@ -280,6 +284,7 @@ static bool stateChanged = false;
  * use it to match with the response.
  */
 static uint32_t ulClientToken = 0U;
+static uint32_t ulCurrentVersion = 0U;
 
 /**
  * @brief The return status of prvUpdateDeltaHandler callback function.
@@ -308,6 +313,14 @@ static BaseType_t xDeleteResponseReceived = pdFALSE;
  * indicates that the Shadow document does not exist for the Thing yet.
  */
 static BaseType_t xShadowDeleted = pdFALSE;
+
+static SemaphoreHandle_t s_getAcceptedResponse;
+
+static EventGroupHandle_t s_shadow_update_event_group;
+
+#define SHADOW_UPDATE_RESPONSE 0
+#define SHADOW_UPDATE_ACCEPTED 1 << 0
+#define SHADOW_UPDATE_REJECTED 1 << 1
 
 /*-----------------------------------------------------------*/
 
@@ -472,7 +485,7 @@ static void prvDeleteRejectedHandler( MQTTPublishInfo_t * pxPublishInfo )
 
 static void prvUpdateDeltaHandler( MQTTPublishInfo_t * pxPublishInfo )
 {
-    static uint32_t ulCurrentVersion = 0; /* Remember the latestVersion # we've ever received */
+    //static uint32_t ulCurrentVersion = 0; /* Remember the latestVersion # we've ever received */
     uint32_t ulVersion = 0U;
     uint32_t ulNewState = 0U;
     char * pcOutValue = NULL;
@@ -661,6 +674,9 @@ static void prvUpdateAcceptedHandler( MQTTPublishInfo_t * pxPublishInfo )
         {
             LogInfo( ( "Received response from the device shadow. Previously published "
                        "update with clientToken=%u has been accepted. ", ulClientToken ) );
+
+            xEventGroupClearBits(s_shadow_update_event_group, SHADOW_UPDATE_REJECTED);
+            xEventGroupSetBits(s_shadow_update_event_group, SHADOW_UPDATE_ACCEPTED);
         }
         else
         {
@@ -677,6 +693,269 @@ static void prvUpdateAcceptedHandler( MQTTPublishInfo_t * pxPublishInfo )
 
 /*-----------------------------------------------------------*/
 
+static void prvUpdateRejectedHandler( MQTTPublishInfo_t * pxPublishInfo )
+{
+    char * pcOutValue = NULL;
+    uint32_t ulOutValueLength = 0U;
+    uint32_t ulReceivedToken = 0U;
+    JSONStatus_t result = JSONSuccess;
+
+    assert( pxPublishInfo != NULL );
+    assert( pxPublishInfo->pPayload != NULL );
+
+    LogInfo( ( "/update/rejected json payload:%s.", ( const char * ) pxPublishInfo->pPayload ) );
+
+    /* Handle the reported state with state change in /update/accepted topic.
+     * Thus we will retrieve the client token from the json document to see if
+     * it's the same one we sent with reported state on the /update topic.
+     * The payload will look similar to this:
+     *  {
+     *      "state": {
+     *          "reported": {
+     *          "powerOn": 1
+     *          }
+     *      },
+     *      "metadata": {
+     *          "reported": {
+     *          "powerOn": {
+     *              "timestamp": 1596573647
+     *          }
+     *          }
+     *      },
+     *      "version": 14698,
+     *      "timestamp": 1596573647,
+     *      "clientToken": "022485"
+     *  }
+     */
+
+    /* Make sure the payload is a valid json document. */
+    result = JSON_Validate( pxPublishInfo->pPayload,
+                            pxPublishInfo->payloadLength );
+
+    if( result == JSONSuccess )
+    {
+        /* Get clientToken from json documents. */
+        result = JSON_Search( ( char * ) pxPublishInfo->pPayload,
+                              pxPublishInfo->payloadLength,
+                              "clientToken",
+                              sizeof( "clientToken" ) - 1,
+                              &pcOutValue,
+                              ( size_t * ) &ulOutValueLength );
+    }
+    else
+    {
+        LogError( ( "Invalid json documents !!" ) );
+    }
+
+    if( result == JSONSuccess )
+    {
+        LogInfo( ( "clientToken: %.*s", ulOutValueLength,
+                   pcOutValue ) );
+
+        /* Convert the code to an unsigned integer value. */
+        ulReceivedToken = ( uint32_t ) strtoul( pcOutValue, NULL, 10 );
+
+        LogInfo( ( "receivedToken:%d, clientToken:%u \r\n", ulReceivedToken, ulClientToken ) );
+
+        /* If the clientToken in this update/accepted message matches the one we
+         * published before, it means the device shadow has accepted our latest
+         * reported state. We are done. */
+        if( ulReceivedToken == ulClientToken )
+        {
+            LogInfo( ( "Received response from the device shadow. Previously published "
+                       "update with clientToken=%u has been accepted. ", ulClientToken ) );
+
+            xEventGroupClearBits(s_shadow_update_event_group, SHADOW_UPDATE_ACCEPTED);
+            xEventGroupSetBits(s_shadow_update_event_group, SHADOW_UPDATE_REJECTED);
+        }
+        else
+        {
+            LogWarn( ( "The received clientToken=%u is not identical with the one=%u we sent ",
+                       ulReceivedToken, ulClientToken ) );
+        }
+    }
+    else
+    {
+        LogError( ( "No clientToken in json document!!" ) );
+        xUpdateAcceptedReturn = pdFAIL;
+    }
+}
+
+static void prvGetAcceptedHandler( MQTTPublishInfo_t * pxPublishInfo )
+{
+    //static uint32_t ulCurrentVersion = 0; /* Remember the latestVersion # we've ever received */
+    uint32_t ulVersion = 0U;
+    uint32_t ulNewState = 0U;
+    char * pcOutValue = NULL;
+    uint32_t ulOutValueLength = 0U;
+    JSONStatus_t result = JSONSuccess;
+
+    assert( pxPublishInfo != NULL );
+    assert( pxPublishInfo->pPayload != NULL );
+
+    LogInfo( ( "/get/accepted json payload:%s.", ( const char * ) pxPublishInfo->pPayload ) );
+
+    /* Make sure the payload is a valid json document. */
+    result = JSON_Validate( pxPublishInfo->pPayload,
+                            pxPublishInfo->payloadLength );
+
+    if( result == JSONSuccess )
+    {
+        /* Then we start to get the version value by JSON keyword "version". */
+        result = JSON_Search( ( char * ) pxPublishInfo->pPayload,
+                              pxPublishInfo->payloadLength,
+                              "version",
+                              sizeof( "version" ) - 1,
+                              &pcOutValue,
+                              ( size_t * ) &ulOutValueLength );
+    }
+    else
+    {
+        LogError( ( "The json document is invalid!!" ) );
+    }
+
+    if( result == JSONSuccess )
+    {
+        LogInfo( ( "version: %.*s",
+                   ulOutValueLength,
+                   pcOutValue ) );
+
+        /* Convert the extracted value to an unsigned integer value. */
+        ulVersion = ( uint32_t ) strtoul( pcOutValue, NULL, 10 );
+    }
+    else
+    {
+        LogError( ( "No version in json document!!" ) );
+    }
+
+    LogInfo( ( "version:%d, ulCurrentVersion:%d \r\n", ulVersion, ulCurrentVersion ) );
+
+    /* When the version is much newer than the on we retained, that means the powerOn
+     * state is valid for us. */
+    if( ulVersion > ulCurrentVersion )
+    {
+        /* Set to received version as the current version. */
+        ulCurrentVersion = ulVersion;
+
+        //process state of get accepted
+        /* Get powerOn state from json documents. */
+        result = JSON_Search( ( char * ) pxPublishInfo->pPayload,
+                              pxPublishInfo->payloadLength,
+                              "state.powerOn",
+                              sizeof( "state.powerOn" ) - 1,
+                              &pcOutValue,
+                              ( size_t * ) &ulOutValueLength );
+
+        if( result == JSONSuccess )
+        {
+            /* Convert the powerOn state value to an unsigned integer value. */
+            ulNewState = ( uint32_t ) strtoul( pcOutValue, NULL, 10 );
+
+            LogInfo( ( "The new power on state newState:%d, ulCurrentPowerOnState:%d \r\n",
+                       ulNewState, ulCurrentPowerOnState ) );
+
+            if( ulNewState != ulCurrentPowerOnState )
+            {
+                /* The received powerOn state is different from the one we retained before, so we switch them
+                 * and set the flag. */
+                ulCurrentPowerOnState = ulNewState;
+
+                /* State change will be handled in main(), where we will publish a "reported"
+                 * state to the device shadow. We do not do it here because we are inside of
+                 * a callback from the MQTT library, so that we don't re-enter
+                 * the MQTT library. */
+                stateChanged = true;
+            }
+        }
+        else
+        {
+            LogError( ( "No powerOn in json document!!" ) );
+            xUpdateDeltaReturn = pdFAIL;
+        }
+    }
+    else
+    {
+        /* In this demo, we discard the incoming message
+         * if the version number is not newer than the latest
+         * that we've received before. Your application may use a
+         * different approach.
+         */
+        LogWarn( ( "The received version is smaller than current one!!" ) );
+    }
+
+    xSemaphoreGive(s_getAcceptedResponse);
+}
+
+static void prvGetRejectedHandler( MQTTPublishInfo_t * pxPublishInfo )
+{
+    //static uint32_t ulCurrentVersion = 0; /* Remember the latestVersion # we've ever received */
+    uint32_t ulVersion = 0U;
+    uint32_t ulNewState = 0U;
+    char * pcOutValue = NULL;
+    uint32_t ulOutValueLength = 0U;
+    JSONStatus_t result = JSONSuccess;
+
+    assert( pxPublishInfo != NULL );
+    assert( pxPublishInfo->pPayload != NULL );
+
+    LogInfo( ( "/get/rejected json payload:%s.", ( const char * ) pxPublishInfo->pPayload ) );
+
+    /* Make sure the payload is a valid json document. */
+    result = JSON_Validate( pxPublishInfo->pPayload,
+                            pxPublishInfo->payloadLength );
+
+    if( result == JSONSuccess )
+    {
+        /* Then we start to get the version value by JSON keyword "version". */
+        result = JSON_Search( ( char * ) pxPublishInfo->pPayload,
+                              pxPublishInfo->payloadLength,
+                              "version",
+                              sizeof( "version" ) - 1,
+                              &pcOutValue,
+                              ( size_t * ) &ulOutValueLength );
+    }
+    else
+    {
+        LogError( ( "The json document is invalid!!" ) );
+    }
+
+    if( result == JSONSuccess )
+    {
+        LogInfo( ( "version: %.*s",
+                   ulOutValueLength,
+                   pcOutValue ) );
+
+        /* Convert the extracted value to an unsigned integer value. */
+        ulVersion = ( uint32_t ) strtoul( pcOutValue, NULL, 10 );
+    }
+    else
+    {
+        LogError( ( "No version in json document!!" ) );
+    }
+
+    LogInfo( ( "version:%d, ulCurrentVersion:%d \r\n", ulVersion, ulCurrentVersion ) );
+
+    /* When the version is much newer than the on we retained, that means the powerOn
+     * state is valid for us. */
+    if( ulVersion > ulCurrentVersion )
+    {
+        /* Set to received version as the current version. */
+        ulCurrentVersion = ulVersion;
+    }
+    else
+    {
+        /* In this demo, we discard the incoming message
+         * if the version number is not newer than the latest
+         * that we've received before. Your application may use a
+         * different approach.
+         */
+        LogWarn( ( "The received version is smaller than current one!!" ) );
+    }
+}
+
+
+/*-----------------------------------------------------------*/
+
 /* This is the callback function invoked by the MQTT stack when it receives
  * incoming messages. This function demonstrates how to use the Shadow_MatchTopic
  * function to determine whether the incoming message is a device shadow message
@@ -686,6 +965,7 @@ static void prvEventCallback( MQTTContext_t * pxMqttContext,
                               MQTTPacketInfo_t * pxPacketInfo,
                               MQTTDeserializedInfo_t * pxDeserializedInfo )
 {
+
     ShadowMessageType_t messageType = ShadowMessageTypeMaxNum;
     const char * pcThingName = NULL;
     uint16_t usThingNameLength = 0U;
@@ -715,7 +995,15 @@ static void prvEventCallback( MQTTContext_t * pxMqttContext,
                                                  &usThingNameLength ) )
         {
             /* Upon successful return, the messageType has been filled in. */
-            if( messageType == ShadowMessageTypeUpdateDelta )
+            if( messageType == ShadowMessageTypeGetAccepted )
+            {
+                prvGetAcceptedHandler( pxDeserializedInfo->pPublishInfo );
+            }
+            else if( messageType == ShadowMessageTypeGetRejected )
+            {
+                prvGetRejectedHandler( pxDeserializedInfo->pPublishInfo );
+            }
+            else if( messageType == ShadowMessageTypeUpdateDelta )
             {
                 /* Handler function to process payload. */
                 prvUpdateDeltaHandler( pxDeserializedInfo->pPublishInfo );
@@ -725,13 +1013,13 @@ static void prvEventCallback( MQTTContext_t * pxMqttContext,
                 /* Handler function to process payload. */
                 prvUpdateAcceptedHandler( pxDeserializedInfo->pPublishInfo );
             }
+            else if( messageType == ShadowMessageTypeUpdateRejected )
+            {
+                prvUpdateRejectedHandler( pxDeserializedInfo->pPublishInfo );
+            }
             else if( messageType == ShadowMessageTypeUpdateDocuments )
             {
                 LogInfo( ( "/update/documents json payload:%s.", ( const char * ) pxDeserializedInfo->pPublishInfo->pPayload ) );
-            }
-            else if( messageType == ShadowMessageTypeUpdateRejected )
-            {
-                LogInfo( ( "/update/rejected json payload:%s.", ( const char * ) pxDeserializedInfo->pPublishInfo->pPayload ) );
             }
             else if( messageType == ShadowMessageTypeDeleteAccepted )
             {
@@ -784,6 +1072,10 @@ static void prvEventCallback( MQTTContext_t * pxMqttContext,
  */
 int RunDeviceShadowDemo()
 {
+
+    s_getAcceptedResponse = xSemaphoreCreateBinary();
+    s_shadow_update_event_group = xEventGroupCreate();
+
     BaseType_t xDemoStatus = pdPASS;
     BaseType_t xDemoRunCount = 0UL;
     BaseType_t xDeleteResponseLoopCount = 0UL;
@@ -870,6 +1162,9 @@ int RunDeviceShadowDemo()
 //                xDemoStatus = pdFAIL;
 //            }
 
+
+
+
             /* Then try to subscribe Shadow delta and Shadow updated topics. */
             if( xDemoStatus == pdPASS )
             {
@@ -892,94 +1187,104 @@ int RunDeviceShadowDemo()
                                                 SHADOW_TOPIC_LENGTH_UPDATE_REJECTED( THING_NAME_LENGTH ) );
             }
 
-            /* This demo uses a constant #THING_NAME known at compile time therefore we can use macros to
-             * assemble shadow topic strings.
-             * If the thing name is known at run time, then we could use the API #Shadow_GetTopicString to
-             * assemble shadow topic strings, here is the example for /update/delta:
-             *
-             * For /update/delta:
-             *
-             * #define SHADOW_TOPIC_MAX_LENGTH  (256U)
-             *
-             * ShadowStatus_t shadowStatus = SHADOW_STATUS_SUCCESS;
-             * char cTopicBuffer[ SHADOW_TOPIC_MAX_LENGTH ] = { 0 };
-             * uint16_t usBufferSize = SHADOW_TOPIC_MAX_LENGTH;
-             * uint16_t usOutLength = 0;
-             * const char * pcThingName = "TestThingName";
-             * uint16_t usThingNameLength  = ( sizeof( pcThingName ) - 1U );
-             *
-             * shadowStatus = Shadow_GetTopicString( SHADOW_TOPIC_STRING_TYPE_UPDATE_DELTA,
-             *                                       pcThingName,
-             *                                       usThingNameLength,
-             *                                       & ( cTopicBuffer[ 0 ] ),
-             *                                       usBufferSize,
-             *                                       & usOutLength );
-             */
-
-            /* Then we publish a desired state to the /update topic. Since we've deleted
-             * the device shadow at the beginning of the demo, this will cause a delta message
-             * to be published, which we have subscribed to.
-             * In many real applications, the desired state is not published by
-             * the device itself. But for the purpose of making this demo self-contained,
-             * we publish one here so that we can receive a delta message later.
-             */
-            if( xDemoStatus == pdPASS )
+            bool getUpdate = true;
+            while(getUpdate)
             {
-                /* Desired power on state . */
-                LogInfo( ( "Send desired power state with 1." ) );
-
-                ( void ) memset( pcUpdateDocument,
-                                 0x00,
-                                 sizeof( pcUpdateDocument ) );
-
-                snprintf( pcUpdateDocument,
-                          SHADOW_DESIRED_JSON_LENGTH + 1,
-                          SHADOW_DESIRED_JSON,
-                          ( int ) 1,
-                          ( long unsigned ) ( xTaskGetTickCount() % 1000000 ) );
-
-                xDemoStatus = PublishToTopic( &xMqttContext,
-                                              SHADOW_TOPIC_STRING_UPDATE( THING_NAME ),
-                                              SHADOW_TOPIC_LENGTH_UPDATE( THING_NAME_LENGTH ),
-                                              pcUpdateDocument,
-                                              ( SHADOW_DESIRED_JSON_LENGTH + 1 ) );
-            }
-
-            if( xDemoStatus == pdPASS )
-            {
-                /* Note that PublishToTopic already called MQTT_ProcessLoop,
-                 * therefore responses may have been received and the prvEventCallback
-                 * may have been called, which may have changed the stateChanged flag.
-                 * Check if the state change flag has been modified or not. If it's modified,
-                 * then we publish reported state to update topic.
-                 */
-                if( stateChanged == true )
+                if( xDemoStatus == pdPASS )
                 {
+                    xDemoStatus = SubscribeToTopic( &xMqttContext,
+                                                    SHADOW_TOPIC_STRING_GET_ACCEPTED( THING_NAME ),
+                                                    SHADOW_TOPIC_LENGTH_GET_ACCEPTED( THING_NAME_LENGTH ) );
+                }
+
+                if( xDemoStatus == pdPASS )
+                {
+                    xDemoStatus = SubscribeToTopic( &xMqttContext,
+                                                    SHADOW_TOPIC_STRING_GET_REJECTED( THING_NAME ),
+                                                    SHADOW_TOPIC_LENGTH_GET_REJECTED( THING_NAME_LENGTH ) );
+                }
+
+                if( xDemoStatus == pdPASS )
+                {
+                    /* Report the latest power state back to device shadow. */
+                    LogInfo( ( "get latest state" ) );
+
+                    xDemoStatus = PublishToTopic( &xMqttContext,
+                                                  SHADOW_TOPIC_STRING_GET( THING_NAME ),
+                                                  SHADOW_TOPIC_LENGTH_GET( THING_NAME_LENGTH ),
+                                                  "",
+                                                  ( 0 ) );
+
+                    //wait for get accepted or rejected, just need a version number
+                    if(xSemaphoreTake(s_getAcceptedResponse, portMAX_DELAY))
+                    {
+                        LogInfo( ( "get accepted latest state and version" ) );
+                    }
+                }
+
+                if( xDemoStatus == pdPASS )
+                {
+                   LogInfo( ( "Start to unsubscribe shadow topics and disconnect from MQTT. \r\n" ) );
+
+                   xDemoStatus = UnsubscribeFromTopic( &xMqttContext,
+                                                       SHADOW_TOPIC_STRING_GET_ACCEPTED( THING_NAME ),
+                                                       SHADOW_TOPIC_LENGTH_GET_ACCEPTED( THING_NAME_LENGTH ) );
+
+                   if( xDemoStatus != pdPASS )
+                   {
+                       LogError( ( "Failed to unsubscribe the topic %s",
+                               SHADOW_TOPIC_STRING_GET_ACCEPTED( THING_NAME ) ) );
+                   }
+                }
+
+                if( xDemoStatus == pdPASS )
+                {
+                   xDemoStatus = UnsubscribeFromTopic( &xMqttContext,
+                                                       SHADOW_TOPIC_STRING_GET_REJECTED( THING_NAME ),
+                                                       SHADOW_TOPIC_LENGTH_GET_REJECTED( THING_NAME_LENGTH ) );
+
+                   if( xDemoStatus != pdPASS )
+                   {
+                       LogError( ( "Failed to unsubscribe the topic %s",
+                               SHADOW_TOPIC_STRING_GET_REJECTED( THING_NAME ) ) );
+                   }
+                }
+
+                if( xDemoStatus == pdPASS )
+                {
+
                     /* Report the latest power state back to device shadow. */
                     LogInfo( ( "Report to the state change: %d", ulCurrentPowerOnState ) );
                     ( void ) memset( pcUpdateDocument,
-                                     0x00,
-                                     sizeof( pcUpdateDocument ) );
+                                    0x00,
+                                    sizeof( pcUpdateDocument ) );
 
                     /* Keep the client token in global variable used to compare if
-                     * the same token in /update/accepted. */
+                    * the same token in /update/accepted. */
                     ulClientToken = ( xTaskGetTickCount() % 1000000 );
 
                     snprintf( pcUpdateDocument,
-                              SHADOW_REPORTED_JSON_LENGTH + 1,
-                              SHADOW_REPORTED_JSON,
-                              ( int ) ulCurrentPowerOnState,
-                              ( long unsigned ) ulClientToken );
+                             SHADOW_REPORTED_JSON_LENGTH + 1,
+                             SHADOW_REPORTED_JSON,
+                             ( int ) ulCurrentPowerOnState,
+                             ( long unsigned ) ulCurrentVersion,
+                             ( long unsigned ) ulClientToken );
 
                     xDemoStatus = PublishToTopic( &xMqttContext,
-                                                  SHADOW_TOPIC_STRING_UPDATE( THING_NAME ),
-                                                  SHADOW_TOPIC_LENGTH_UPDATE( THING_NAME_LENGTH ),
-                                                  pcUpdateDocument,
-                                                  ( SHADOW_DESIRED_JSON_LENGTH + 1 ) );
-                }
-                else
-                {
-                    LogInfo( ( "No change from /update/delta, unsubscribe all shadow topics and disconnect from MQTT.\r\n" ) );
+                                                 SHADOW_TOPIC_STRING_UPDATE( THING_NAME ),
+                                                 SHADOW_TOPIC_LENGTH_UPDATE( THING_NAME_LENGTH ),
+                                                 pcUpdateDocument,
+                                                 ( SHADOW_DESIRED_JSON_LENGTH + 1 ) );
+
+                    //wait for either update accepted or rejected and then clear them after
+                    EventBits_t bits = xEventGroupWaitBits(s_shadow_update_event_group, SHADOW_UPDATE_ACCEPTED | SHADOW_UPDATE_REJECTED , pdTRUE, pdFALSE, portMAX_DELAY);
+                    if(bits & SHADOW_UPDATE_REJECTED)
+                    {
+                        //rejected try again
+                    }else if(bits & SHADOW_UPDATE_ACCEPTED)
+                    {
+                        getUpdate = false;
+                    }
                 }
             }
 
