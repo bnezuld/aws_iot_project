@@ -314,7 +314,7 @@ static BaseType_t xDeleteResponseReceived = pdFALSE;
  */
 static BaseType_t xShadowDeleted = pdFALSE;
 
-static SemaphoreHandle_t s_getAcceptedResponse;
+static SemaphoreHandle_t s_getResponse;
 
 static EventGroupHandle_t s_shadow_update_event_group;
 
@@ -883,7 +883,7 @@ static void prvGetAcceptedHandler( MQTTPublishInfo_t * pxPublishInfo )
         LogWarn( ( "The received version is smaller than current one!!" ) );
     }
 
-    xSemaphoreGive(s_getAcceptedResponse);
+    xSemaphoreGive(s_getResponse);
 }
 
 static void prvGetRejectedHandler( MQTTPublishInfo_t * pxPublishInfo )
@@ -951,6 +951,7 @@ static void prvGetRejectedHandler( MQTTPublishInfo_t * pxPublishInfo )
          */
         LogWarn( ( "The received version is smaller than current one!!" ) );
     }
+    xSemaphoreGive(s_getResponse);
 }
 
 
@@ -1073,7 +1074,7 @@ static void prvEventCallback( MQTTContext_t * pxMqttContext,
 int RunDeviceShadowDemo()
 {
 
-    s_getAcceptedResponse = xSemaphoreCreateBinary();
+    s_getResponse = xSemaphoreCreateBinary();
     s_shadow_update_event_group = xEventGroupCreate();
 
     BaseType_t xDemoStatus = pdPASS;
@@ -1216,7 +1217,7 @@ int RunDeviceShadowDemo()
                                                   ( 0 ) );
 
                     //wait for get accepted or rejected, just need a version number
-                    if(xSemaphoreTake(s_getAcceptedResponse, portMAX_DELAY))
+                    if(xSemaphoreTake(s_getResponse, portMAX_DELAY))
                     {
                         LogInfo( ( "get accepted latest state and version" ) );
                     }
@@ -1332,14 +1333,6 @@ int RunDeviceShadowDemo()
             /* The MQTT session is always disconnected, even if there were prior failures. */
             xDemoStatus = DisconnectMqttSession( &xMqttContext, &xNetworkContext );
 
-            /* This demo performs only Device Shadow operations. If matching the Shadow
-             * MQTT topic fails or there are failure in parsing the received JSON document,
-             * then this demo was not successful. */
-            if( ( xUpdateAcceptedReturn != pdPASS ) || ( xUpdateDeltaReturn != pdPASS ) )
-            {
-                LogError( ( "Callback function failed." ) );
-                xDemoStatus = pdFAIL;
-            }
         }
 
         /* Increment the demo run count. */

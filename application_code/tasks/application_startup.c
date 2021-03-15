@@ -18,6 +18,11 @@
 
 #include <stdio.h>
 
+#include <ti/devices/cc32xx/inc/hw_types.h>
+#include <ti/devices/cc32xx/driverlib/prcm.h>
+#include <ti/drivers/power/PowerCC32XX.h>
+//#include <ti/drivers/Power.h>
+
 void startup(void * params){
 
 
@@ -35,8 +40,18 @@ void startup(void * params){
                                   NULL,
                                   democonfigDEMO_PRIORITY,
                                   democonfigDEMO_STACKSIZE );*/
+        WIFI_Off();
     }else{
         WIFI_Off();
         AP_Task(NULL);
     }
+
+    //Power_shutdown(0, 1);
+
+
+    PRCMHibernateIntervalSet(330);
+
+    PRCMHibernateWakeupSourceEnable(PRCM_HIB_SLOW_CLK_CTR);
+
+    PRCMHibernateEnter();
 }
