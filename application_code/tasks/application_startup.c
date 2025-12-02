@@ -21,7 +21,8 @@
 #include <ti/devices/cc32xx/inc/hw_types.h>
 #include <ti/devices/cc32xx/driverlib/prcm.h>
 #include <ti/drivers/power/PowerCC32XX.h>
-//#include <ti/drivers/Power.h>
+
+#define HIBERNATE_CLOCK_SPEED_SECOND 32768
 
 void startup(void * params){
 
@@ -49,7 +50,7 @@ void startup(void * params){
     //Power_shutdown(0, 1);
 
 
-    PRCMHibernateIntervalSet(330);
+    PRCMHibernateIntervalSet(HIBERNATE_CLOCK_SPEED_SECOND*60);
 
     PRCMHibernateWakeupSourceEnable(PRCM_HIB_SLOW_CLK_CTR);
 

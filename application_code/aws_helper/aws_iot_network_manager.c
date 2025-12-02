@@ -32,8 +32,8 @@
 #include "FreeRTOS.h"
 
 #include "iot_demo_logging.h"
-#include <application_code/tasks/include/iot_network_manager_private.h>
-#include <demos/include/aws_clientcredential.h>
+#include "iot_network_manager_private.h"
+#include "aws_clientcredential.h""
 
 #include "iot_linear_containers.h"
 #include "iot_taskpool.h"
@@ -79,6 +79,7 @@
 
 #define _NM_WIFI_CONNECTION_RETRIES              ( 5 )
 
+#define AUTO_CONNECT_AP 1
 
 /**
  * @brief Structure holds information for each network and the runtime state of it.
@@ -432,6 +433,7 @@ static IotNetworkManager_t networkManager =
             uint32_t numRetries = _NM_WIFI_CONNECTION_RETRIES;
             uint32_t delayMilliseconds = _NM_WIFI_CONNECTION_RETRY_INTERVAL_MS;
 
+        #if AUTO_CONNECT_AP == 0
             if( pcSSID != NULL )
             {
                 xSSIDLength = strlen( pcSSID );
@@ -474,13 +476,18 @@ static IotNetworkManager_t networkManager =
                     status = false;
                 }
             }
-
+        #endif
             if( status == true )
             {
                 /* Try to connect to wifi access point with retry and exponential delay */
                 do
                 {
+#if AUTO_CONNECT_AP == 0
                     if( WIFI_ConnectAP( &( xConnectParams ) ) == eWiFiSuccess )
+#else
+                    if( WIFI_ConnectAP( NULL ) == eWiFiSuccess )
+#endif
+
                     {
                         wifiNetwork.state = eNetworkStateEnabled;
                         break;
